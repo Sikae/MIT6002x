@@ -265,25 +265,26 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
     trials = []
     for trial in range(num_trials):
         room = RectangularRoom(width, height)
+        robots = []
         for i in range(num_robots):
             robots.append(robot_type(room, speed))
-        steps = 0
-        while room.getNumCleanedTiles() / room.getNumTiles() < min_coverage:
-            #print room.getNumCleanedTiles()
+        steps = 1
+        #anim = ps2_visualize.RobotVisualization(num_robots, width, height)
+        while  float(room.getNumCleanedTiles()) / room.getNumTiles() < min_coverage:
             steps += 1
+            #anim.update(room, robots)
             for i in range(num_robots):
                 robots[i].updatePositionAndClean()
                 room.cleanTileAtPosition(robots[i].getRobotPosition())
-                for j in range(num_robots):
-                    robots[j].room = room
-                
+        #anim.done()    
         trials.append(steps)
-    print trials
+    #print sum(trials)
     return sum(trials) / num_trials
 
 # Uncomment this line to see how much your simulation takes on average
 #print  runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot)
-print  runSimulation(1, 1.0, 5, 5, 0.78, 100, StandardRobot)
+random.seed(1)
+print  runSimulation(1, 1.5, 15, 4, 1, 3, StandardRobot)
 
 # === Problem 4
 class RandomWalkRobot(Robot):
