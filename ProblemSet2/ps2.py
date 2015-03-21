@@ -268,7 +268,7 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
         robots = []
         for i in range(num_robots):
             robots.append(robot_type(room, speed))
-        steps = 1
+        steps = 0
         #anim = ps2_visualize.RobotVisualization(num_robots, width, height)
         while  float(room.getNumCleanedTiles()) / room.getNumTiles() < min_coverage:
             steps += 1
@@ -279,12 +279,12 @@ def runSimulation(num_robots, speed, width, height, min_coverage, num_trials,
         #anim.done()    
         trials.append(steps)
     #print sum(trials)
-    return sum(trials) / num_trials
+    return float(sum(trials)) / num_trials
 
 # Uncomment this line to see how much your simulation takes on average
-#print  runSimulation(1, 1.0, 10, 10, 0.75, 30, StandardRobot)
-random.seed(1)
-print  runSimulation(1, 1.5, 15, 4, 1, 3, StandardRobot)
+#print  runSimulation(1, 1.0, 10, 10, 0.75, 1, StandardRobot)
+
+#random.seed(1)
 
 # === Problem 4
 class RandomWalkRobot(Robot):
@@ -299,8 +299,17 @@ class RandomWalkRobot(Robot):
         Move the robot to a new position and mark the tile it is on as having
         been cleaned.
         """
-        raise NotImplementedError
+        d = list(i for i in range(360 + 1))
+        new_direction = random.choice(d)
+        new_position = self.position.getNewPosition(new_direction, self.speed)
+        while not self.room.isPositionInRoom(new_position):
+            new_direction = random.choice(d)
+            new_position = self.position.getNewPosition(new_direction, self.speed)
+        self.position = new_position
+        self.direction = new_direction
+        self.room.cleanTileAtPosition(self.position)
 
+#print  runSimulation(1, 1.0, 10, 10, 0.75, 1, RandomWalkRobot)
 
 def showPlot1(title, x_label, y_label):
     """
@@ -349,12 +358,12 @@ def showPlot2(title, x_label, y_label):
 # 1) Write a function call to showPlot1 that generates an appropriately-labeled
 #     plot.
 #
-#       (... your call here ...)
+#showPlot1("Time It Takes 1 - 10 Robots To Clean 80% Of A Room", "Robots", "Time steps")
 #
 
 #
 # 2) Write a function call to showPlot2 that generates an appropriately-labeled
 #     plot.
 #
-#       (... your call here ...)
+showPlot2("Time It Takes Two Robots To Clean 80% Of Variously Sized Rooms", "Aspect Ratio width/height", "Time steps")
 #
