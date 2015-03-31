@@ -456,5 +456,53 @@ def simulationWithDrug(numViruses, maxPop, maxBirthProb, clearProb, resistances,
     numTrials: number of simulation runs to execute (an integer)
     
     """
+#     resistances["guttagonol"] = False
+#     population = auxSimulationWithDrugs(numTrials, numViruses, maxBirthProb, clearProb, resistances, mutProb, maxPop)
+#     resistances["guttagonol"] = True
+#     populationResistant = auxSimulationWithDrugs(numTrials, numViruses, maxBirthProb, clearProb, resistances, mutProb, maxPop)
+    population = [0] * 300
+    resistant_population = [0] * 300
+    for i in range(numTrials):
+        viruses = []
+        for j in range(numViruses):
+            viruses.append(ResistantVirus(maxBirthProb, clearProb, resistances, mutProb))
+        patient = TreatedPatient(viruses, maxPop)
 
-    # TODO
+        for k in range(300):
+            if k == 149:
+                patient.addPrescription("gutaggonol")
+            patient.update()
+            #print patient.getTotalPop()
+            population[k] += patient.getTotalPop()
+            resistant_population[k] += patient.getResistPop(['guttagonol'])
+    for k in range(300):
+        population[k] = float(population[k]) / numTrials
+        resistant_population[k] = float(resistant_population[k]) / numTrials
+
+    time_steps = [i for i in range(300)]
+    pylab.figure()
+    pylab.plot(time_steps, population)
+    pylab.plot(time_steps, resistant_population)
+    pylab.title("Growth of Virus Population with drug resistance and patient with drugs")
+    pylab.xlabel("Timesteps")
+    pylab.ylabel("Virus Population")
+    pylab.legend(("Without resistance", "Resistant to guttagonol"))
+    pylab.show()
+    #print population
+
+simulationWithDrug(1, 10, 1.0, 0.0, {}, 1.0, 5)    
+def auxSimulationWithDrugs(numTrials, numViruses, maxBirthProb, clearProb, resistances, mutProb, maxPop):
+    population = [0] * 150
+    for i in range(numTrials):
+        viruses = []
+        for j in range(numViruses):
+            viruses.append(ResistantVirus(maxBirthProb, clearProb, resistances, mutProb))
+        patient = TreatedPatient(viruses, maxPop)
+
+        for k in range(150):
+            patient.update()
+            #print patient.getTotalPop()
+            population[k] += patient.getTotalPop()
+    for k in range(150):
+        population[k] = float(population[k]) / numTrials
+    return population
